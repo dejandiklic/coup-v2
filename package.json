@@ -1,0 +1,27 @@
+{
+  "name": "coup_v2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "client-start": "cd client && npm start",
+    "server-start": "cd server && npm start",
+    "start-all": "concurrently \"cd client && npm start\" \"cd server && npm start\"",
+    "client-build": "cd client && npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dejandiklic/coup-v2.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dejandiklic/coup-v2/issues"
+  },
+  "homepage": "https://github.com/dejandiklic/coup-v2#readme",
+  "dependencies": {
+    "concurrently": "^7.6.0"
+  }
+}
