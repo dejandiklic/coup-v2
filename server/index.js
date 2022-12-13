@@ -15,6 +15,7 @@ const socketIO = require('socket.io')(http, {
 
 app.use(cors());
 
+console.log(process.env.REACT_APP_MODE)
 
 //Add this before the app.get() block
 socketIO.on('connection', (socket) => {
