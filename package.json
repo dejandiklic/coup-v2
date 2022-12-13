@@ -9,7 +9,9 @@
     "server-start": "cd server && npm start",
     "start-all": "concurrently \"cd client && npm start\" \"cd server && npm start\"",
     "client-build": "cd client && npm run build",
-    "client-deploy": "cd client && npm install && npm run build"
+    "client-deploy": "cd client && npm install && npm run build",
+    "server-build": "cd server && npm install",
+    "server-deploy-start" : "cd server && npm start"
   },
   "repository": {
     "type": "git",
