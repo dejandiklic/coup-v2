@@ -2,14 +2,13 @@ import './App.css';
 import socketIO from 'socket.io-client';
 import {useEffect} from "react";
 
-const socket = socketIO.connect('http://localhost:4000');
+const socket = socketIO.connect(process.env.REACT_APP_SERVER_URL);
 
 function App() {
 
 
     useEffect(() => {
         socket.on("response", (data) => {
-            console.log(data)
             alert(data)
         })
     }, [socket])
@@ -17,8 +16,6 @@ function App() {
     const handleClick = () => {
         socket.emit("test", "test");
     }
-
-    console.log(process.env)
 
     return (
         <div>

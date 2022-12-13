@@ -8,14 +8,12 @@ const http = require('http').Server(app);
 const cors = require('cors');
 const socketIO = require('socket.io')(http, {
     cors: {
-        origin: "http://localhost:3000"
+        origin: process.env.CLIENT_URL
     }
 });
 
 
 app.use(cors());
-
-console.log(process.env.REACT_APP_MODE)
 
 //Add this before the app.get() block
 socketIO.on('connection', (socket) => {
@@ -25,7 +23,6 @@ socketIO.on('connection', (socket) => {
     });
 
     socket.on('test', (data) => {
-        console.log(process.env.REACT_APP_MODE)
         console.log(data);
         socket.emit("response", data + "-back")
     });
