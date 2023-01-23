@@ -16,6 +16,9 @@ export const authSlice = createSlice({
             state.username = action.payload.username
             state.authenticated = true
             state.type = "GUEST"
+        },
+        setSocketId: (state, action) => {
+            state.socketID = action.payload
         }
     },
     extraReducers: builder => {
@@ -23,5 +26,5 @@ export const authSlice = createSlice({
     }
 })
 
-export const {guestLogin} = authSlice.actions
+export const {guestLogin,setSocketId} = authSlice.actions
 export default authSlice.reducer

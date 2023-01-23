@@ -66,7 +66,7 @@ function Login(props) {
                         <Row justify="space-around">
                             <Col>Guest:</Col>
                             <Col>
-                                <Switch defaultChecked={guest} onClick={() => {
+                                <Switch disabled={true} defaultChecked={guest} onClick={() => {
                                     setGuest(prevState => !prevState)
                                 }}/>
                             </Col>
