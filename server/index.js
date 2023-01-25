@@ -21,23 +21,14 @@ let userList = []
 
 //Add this before the app.get() block
 socketIO.on('connection', (socket) => {
-    console.log(`⚡: ${socket.id} user just connected!`);
-
     socket.on("addUser", (data) => {
-        console.log(data)
         const user = new User(data)
         userList.push(user)
-        console.log(userList)
     })
-
     socket.on('disconnect', () => {
-        userList = userList.filter((user) => user.id === socket.id)
-        console.log('🔥: A user disconnected');
-        console.log(userList)
+        userList = userList.filter((user) => user.socketID !== socket.id)
     });
-
     socket.on('test', (data) => {
-        console.log(data);
         socket.emit("response", data + "-back")
     });
 });
