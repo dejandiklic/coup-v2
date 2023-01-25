@@ -6,6 +6,7 @@ import Lobby from "../Pages/Lobby/Lobby";
 import Login from "../Pages/Login/Login";
 import {useSelector} from "react-redux";
 import {authState} from "../redux/selectors";
+import Room from "../Pages/Lobby/Room/Room";
 
 const menuItems = [
     {
@@ -22,7 +23,7 @@ const menuItems = [
     },
 ];
 
-function Navbar(props) {
+function Navbar() {
 
     const navigate = useNavigate()
     const {authenticated} = useSelector(authState)
@@ -54,6 +55,7 @@ function Content() {
         <Routes>
             <Route path="/" element={<Home/>}/>
             <Route path="/lobby" element={<Lobby/>}/>
+            <Route path="/lobby/:roomName" element={<Room/>}/>
             <Route path={"/login"} element={<Login/>}/>
         </Routes>
     </div>

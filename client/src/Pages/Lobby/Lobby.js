@@ -1,15 +1,25 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {Button, Row, Table} from "antd";
-import CreateRoomModal from "./CreateRoomModal";
+import CreateRoomModal from "./Room/CreateRoomModal";
 import {SocketContext} from "../../context/SocketContext";
+import {setRooms} from "../../redux/rooms";
+import {useDispatch, useSelector} from "react-redux";
+import {roomsState} from "../../redux/selectors";
 
-function Lobby(props) {
+function Lobby() {
 
-
+    const dispatch = useDispatch()
     const {socket} = useContext(SocketContext);
 
-    const [data, setData] = useState([])
+    const {rooms} = useSelector(roomsState)
+
     const [show, setShow] = useState(false)
+
+    useEffect(() => {
+        socket.on("room list update", (data) => {
+            dispatch(setRooms(data))
+        })
+    }, [])
 
     const handleJoin = (id) => {
         console.log(id)
@@ -18,8 +28,8 @@ function Lobby(props) {
     const columns = [
         {
             title: 'Room name',
-            dataIndex: 'room_name',
-            key: 'room_name',
+            dataIndex: 'name',
+            key: 'name',
             render: (text) => <a>{text}</a>,
         },
         {
@@ -36,21 +46,15 @@ function Lobby(props) {
         },
     ];
 
-
-    const testServer = () => {
-        socket.emit("test","ajmo")
-    }
-
     return (
         <>
-            <Row>
+            <Row justify={"space-around"} className={"mt-2"}>
                 <Button onClick={() => {
                     setShow(true)
                 }}>New room</Button>
-                <Button onClick={testServer}>TEST</Button>
             </Row>
             <Row>
-                <Table className="lobby-table" columns={columns} dataSource={data}/>
+                <Table rowKey={"name"} className="lobby-table" columns={columns} dataSource={rooms}/>
             </Row>
             <CreateRoomModal show={show} setShow={setShow}/>
         </>

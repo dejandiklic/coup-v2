@@ -1,12 +1,18 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {Form, Input, Modal, Select} from "antd";
 import Password from "antd/es/input/Password";
+import {SocketContext} from "../../../context/SocketContext";
+import {useNavigate} from "react-router-dom";
+import {useDispatch} from "react-redux";
+import {setRoom} from "../../../redux/rooms";
 
 function CreateRoomModal({show, setShow}) {
 
 
     const [form] = Form.useForm();
-
+    const dispatch = useDispatch()
+    const {socket} = useContext(SocketContext);
+    const navigate = useNavigate()
 
     const handleCancel = () => {
         setShow(false)
@@ -17,7 +23,11 @@ function CreateRoomModal({show, setShow}) {
     }
 
     const handleSubmit = (data) => {
-        console.log(data)
+        setShow(false)
+        socket.emit("new room", data, (resp) => {
+            dispatch(setRoom(resp))
+            navigate(`/lobby/${resp.name}`)
+        })
     }
 
 

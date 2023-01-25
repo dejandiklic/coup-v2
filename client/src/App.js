@@ -8,6 +8,7 @@ import {SocketContext} from "./context/SocketContext";
 import {useDispatch, useSelector} from "react-redux";
 import {authState} from "./redux/selectors";
 import {setSocketId} from "./redux/auth";
+import {setRooms} from "./redux/rooms";
 
 function App() {
 
@@ -20,7 +21,9 @@ function App() {
             const socket = io(process.env.REACT_APP_SERVER_URL);
             socket.on("connect", () => {
                 dispatch(setSocketId(socket.id))
-                socket.emit("addUser", {...user, socketID: socket.id})
+                socket.emit("user joined", {...user, socketID: socket.id}, (response) => {
+                    dispatch(setRooms(response))
+                })
             })
             setSocket(socket);
         }
