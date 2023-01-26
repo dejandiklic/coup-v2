@@ -26,6 +26,9 @@ function App() {
                 })
             })
             setSocket(socket);
+            return () => {
+                socket.off("connect")
+            }
         }
     }, [user.authenticated]);
 

@@ -16,10 +16,16 @@ function Lobby() {
     const [show, setShow] = useState(false)
 
     useEffect(() => {
-        socket.on("room list update", (data) => {
-            dispatch(setRooms(data))
-        })
-    }, [])
+        if (socket) {
+            socket.emit("get rooms update")
+            socket.on("room list update", (data) => {
+                dispatch(setRooms(data))
+            })
+            return () => {
+                socket.off("room list update")
+            }
+        }
+    }, [socket])
 
     const handleJoin = (id) => {
         console.log(id)
