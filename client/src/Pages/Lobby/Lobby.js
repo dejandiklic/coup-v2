@@ -6,6 +6,7 @@ import {setRoom, setRooms} from "../../redux/rooms";
 import {useDispatch, useSelector} from "react-redux";
 import {roomsState} from "../../redux/selectors";
 import {useNavigate} from "react-router-dom";
+import RoomPasswordModal from "./Room/RoomPasswordModal";
 
 function Lobby() {
 
@@ -17,6 +18,8 @@ function Lobby() {
     const {rooms} = useSelector(roomsState)
 
     const [show, setShow] = useState(false)
+    const [showPassModal, setShowPassModal] = useState(false)
+    const [roomName, setRoomName] = useState("")
 
     useEffect(() => {
         if (socket) {
@@ -30,11 +33,17 @@ function Lobby() {
         }
     }, [socket])
 
-    const handleJoin = (name) => {
-        socket.emit("join room", {roomName: name, playerID: socket.id}, (response) => {
-            dispatch(setRoom(response))
-            navigate(`/lobby/${response.name}`)
-        })
+    const handleJoin = (name, type) => {
+        if (type === "private") {
+            setShowPassModal(true)
+            setRoomName(name)
+        } else {
+            socket.emit("join room", {roomName: name, playerID: socket.id}, (response) => {
+                dispatch(setRoom(response))
+                navigate(`/lobby/${response.name}`)
+            })
+        }
+
     }
 
     const columns = [
@@ -61,8 +70,9 @@ function Lobby() {
         {
             title: 'Action',
             key: 'action',
-            render: ({name}, row) => {
-                return <Button disabled={row.playerList.length >= 6} onClick={() => handleJoin(name)}>JOIN</Button>
+            render: ({name, type}, row) => {
+                return <Button disabled={row.playerList.length >= 6}
+                               onClick={() => handleJoin(name, type)}>JOIN</Button>
             }
         },
     ];
@@ -78,6 +88,7 @@ function Lobby() {
                 <Table rowKey={"name"} className="lobby-table" columns={columns} dataSource={rooms}/>
             </Row>
             <CreateRoomModal show={show} setShow={setShow}/>
+            <RoomPasswordModal show={showPassModal} setShow={setShowPassModal} roomName={roomName}/>
         </>
     );
 }

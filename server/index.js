@@ -63,6 +63,30 @@ socketIO.on('connection', (socket) => {
         callback(room)
     })
 
+    socket.on("room password submit", (data, callback) => {
+
+        let room = locateRoomByName(data.roomName, roomList)
+        if (room.password === data.password) {
+
+            socket.leave("Lobby")
+            socket.join(data.roomName)
+
+            let player = locatePlayerByID(data.playerID, userList)
+            room.playerList.push({socketID: player.socketID, username: player.username})
+            socketIO.emit("room list update", roomList)
+            socketIO.to(room.name).emit("room update", room)
+            callback({
+                room,
+                error: ""
+            })
+        } else {
+            callback({
+                room: {},
+                error: "Incorrect password"
+            })
+        }
+    })
+
     socket.on("get rooms update", () => {
         socket.emit("room list update", roomList)
     })
