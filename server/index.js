@@ -87,6 +87,13 @@ socketIO.on('connection', (socket) => {
         }
     })
 
+    socket.on("kick player", (data) => {
+        let kickedPlayer = socketIO.of('/').sockets.get(data.playerID)
+        roomList = removePlayerFromRoom(roomList, userList, kickedPlayer)
+        socketIO.to(data.playerID).emit("kicked")
+        socketIO.emit("room list update", roomList)
+    })
+
     socket.on("get rooms update", () => {
         socket.emit("room list update", roomList)
     })

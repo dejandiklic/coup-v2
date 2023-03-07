@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {Button, Row, Table} from "antd";
+import {Button, Row, Table, Tag} from "antd";
 import CreateRoomModal from "./Room/CreateRoomModal";
 import {SocketContext} from "../../context/SocketContext";
 import {setRoom, setRooms} from "../../redux/rooms";
@@ -57,13 +57,23 @@ function Lobby() {
             title: 'Type',
             dataIndex: 'type',
             key: 'type',
+            render:(cell) =>{
+                if(cell==="public"){
+                    return <Tag color={"green"}>
+                        PUBLIC
+                    </Tag>
+                }else{
+                    return <Tag color={"orange"}>
+                        PRIVATE
+                    </Tag>
+                }
+            }
         },
         {
             title: 'Players',
             dataIndex: 'players',
             key: 'players',
             render: (cell, row) => {
-                console.log(row)
                 return `${row.playerList.length}/6`
             }
         },

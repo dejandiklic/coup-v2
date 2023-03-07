@@ -2,13 +2,17 @@ import React, {useContext, useEffect} from 'react';
 import {SocketContext} from "../../../context/SocketContext";
 import {useDispatch, useSelector} from "react-redux";
 import {roomsState} from "../../../redux/selectors";
-import {Row, Table, Tag} from "antd";
+import {Button, Row, Table, Tag} from "antd";
 import {setRoom} from "../../../redux/rooms";
+import KickPlayerPopover from "../../../components/KickPlayerPopover";
+import {useNavigate} from "react-router-dom";
 
 function Room() {
 
     const {room} = useSelector(roomsState)
     const dispatch = useDispatch()
+
+    const navigate = useNavigate()
 
     const {socket} = useContext(SocketContext);
 
@@ -19,9 +23,15 @@ function Room() {
                 dispatch(setRoom(data))
             })
 
+            socket.on("kicked", () => {
+                dispatch(setRoom({}))
+                navigate("/lobby")
+            })
+
             return () => {
                 dispatch(setRoom({}))
                 socket.off("room update")
+                socket.off("kicked")
                 socket.emit("leaving room")
             }
         }
@@ -57,6 +67,18 @@ function Room() {
         {
             title: 'Action',
             key: 'action',
+            render: (cell, row) => {
+                if (socket.id === room.admin) {
+                    if (row.socketID === room.admin) {
+                        return <Button>
+                            Start game
+                        </Button>
+                    } else {
+                        return <KickPlayerPopover playerID={row.socketID} roomName={room.name}/>
+                    }
+                }
+
+            }
         },
     ];
 
