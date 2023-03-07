@@ -8,7 +8,7 @@ const http = require('http').Server(app);
 const cors = require('cors');
 const {User} = require('./users')
 const {Room} = require('./rooms')
-const {removePlayerFromRoom} = require("./helpers");
+const {removePlayerFromRoom, locatePlayerByID, locateRoomByName} = require("./helpers");
 const socketIO = require('socket.io')(http, {
     cors: {
         origin: process.env.CLIENT_URL
@@ -37,9 +37,29 @@ socketIO.on('connection', (socket) => {
     })
 
     socket.on("new room", (data, callback) => {
-        let room = new Room(data, socket.id)
+
+        socket.leave("Lobby")
+
+        let player = locatePlayerByID(socket.id, userList)
+
+        let room = new Room(data, {socketID: player.socketID, username: player.username})
+        socket.join(room.name)
         roomList.push(room)
         socketIO.emit("room list update", roomList)
+        callback(room)
+    })
+
+    socket.on("join room", (data, callback) => {
+
+        socket.leave("Lobby")
+        socket.join(data.roomName)
+
+        let player = locatePlayerByID(data.playerID, userList)
+        let room = locateRoomByName(data.roomName, roomList)
+        room.playerList.push({socketID: player.socketID, username: player.username})
+
+        socketIO.emit("room list update", roomList)
+        socketIO.to(room.name).emit("room update", room)
         callback(room)
     })
 
@@ -53,9 +73,9 @@ socketIO.on('connection', (socket) => {
     })
 
     socket.on('disconnect', () => {
-        userList = userList.filter((user) => user.socketID !== socket.id)
-        lobbyRoom.playerList = lobbyRoom.playerList.filter((socketID) => socketID !== socket.id)
         roomList = removePlayerFromRoom(roomList, userList, socket)
+        userList = userList.filter((user) => user.socketID !== socket.id)
+        lobbyRoom.playerList = lobbyRoom.playerList.filter(player => player.socketID !== socket.id)
         socketIO.emit("room list update", roomList)
     });
     socket.on('test', (data) => {

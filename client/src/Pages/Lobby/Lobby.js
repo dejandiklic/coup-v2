@@ -2,14 +2,17 @@ import React, {useContext, useEffect, useState} from 'react';
 import {Button, Row, Table} from "antd";
 import CreateRoomModal from "./Room/CreateRoomModal";
 import {SocketContext} from "../../context/SocketContext";
-import {setRooms} from "../../redux/rooms";
+import {setRoom, setRooms} from "../../redux/rooms";
 import {useDispatch, useSelector} from "react-redux";
 import {roomsState} from "../../redux/selectors";
+import {useNavigate} from "react-router-dom";
 
 function Lobby() {
 
     const dispatch = useDispatch()
     const {socket} = useContext(SocketContext);
+
+    const navigate = useNavigate()
 
     const {rooms} = useSelector(roomsState)
 
@@ -27,8 +30,11 @@ function Lobby() {
         }
     }, [socket])
 
-    const handleJoin = (id) => {
-        console.log(id)
+    const handleJoin = (name) => {
+        socket.emit("join room", {roomName: name, playerID: socket.id}, (response) => {
+            dispatch(setRoom(response))
+            navigate(`/lobby/${response.name}`)
+        })
     }
 
     const columns = [
@@ -44,10 +50,19 @@ function Lobby() {
             key: 'type',
         },
         {
+            title: 'Players',
+            dataIndex: 'players',
+            key: 'players',
+            render: (cell, row) => {
+                console.log(row)
+                return `${row.playerList.length}/6`
+            }
+        },
+        {
             title: 'Action',
             key: 'action',
-            render: ({id}) => {
-                return <Button onClick={() => handleJoin(id)}>JOIN</Button>
+            render: ({name}, row) => {
+                return <Button disabled={row.playerList.length >= 6} onClick={() => handleJoin(name)}>JOIN</Button>
             }
         },
     ];
